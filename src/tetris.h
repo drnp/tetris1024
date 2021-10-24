@@ -39,8 +39,8 @@
 #define APP_NAME                        "Tetris"
 #define APP_VERSION                     "0.0.1-1024@spec"
 
-#define SCENE_MIN_WIDTH                 80
-#define SCENE_MIN_HEIGHT                25
+#define SCENE_MIN_WIDTH                 90
+#define SCENE_MIN_HEIGHT                38
 #define SPLASH_TITLE_WIDTH              81
 #define SPLASH_TITLE_HEIGHT             18
 #define PLAYGROUND_WIDTH                16

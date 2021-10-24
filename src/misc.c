@@ -31,6 +31,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+// Get ramdomize number from urandom device
+// Modify this for more flexibility randomize generator?
 int get_random()
 {
     static char buf[4];
@@ -56,6 +58,7 @@ int get_random()
     return ret;
 }
 
+// Level => Speed
 unsigned long long int calculate_speed(int level)
 {
     switch (level)

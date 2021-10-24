@@ -66,6 +66,7 @@ int check_window()
     return 0;
 }
 
+// Initialize color pairs
 void color_pairs()
 {
     // Base black bg
@@ -121,6 +122,7 @@ void color_pairs()
     return;
 }
 
+// Draw tile maps with CKBOARD
 void _splash_title_char(WINDOW *win, char **c, int lines,  int y, int x, int color_idx)
 {
     if (win == NULL || c == NULL)
@@ -148,6 +150,7 @@ void _splash_title_char(WINDOW *win, char **c, int lines,  int y, int x, int col
     return;
 }
 
+// Boxes
 void _render_boxes()
 {
     if (score_box == NULL || level_box == NULL || blocks_box == NULL)
@@ -187,6 +190,7 @@ void _render_boxes()
     return;
 }
 
+// Next block window
 void _render_next()
 {
     if (next_block == NULL)
@@ -221,6 +225,7 @@ void _render_next()
     return;
 }
 
+// Playground refresh
 void _render_playground()
 {
     char dot;
@@ -251,7 +256,6 @@ void _render_playground()
             dot = scene.playground[i][j];
             if ('c' == dot && curr_block != NULL)
             {
-                //dot = 0;
                 wattron(playground_box, A_BOLD);
                 wattron(playground_box, COLOR_PAIR(curr_block->color));
                 mvwaddch(playground_box, PLAYGROUND_HEIGHT - i, j * 2 + 1, ACS_CKBOARD);
@@ -289,6 +293,7 @@ void _render_playground()
         }
     }
 
+    // Some trace info
     static char curr_trace_str[16];
     memset(curr_trace_str, 0, 16);
 
@@ -311,6 +316,7 @@ void _render_playground()
     return;
 }
 
+/* {{{ [Block activities] */
 bool _curr_block_rotate(bool clockwise, enum block_direction_e *dir, int *tile)
 {
     if (curr_block == NULL)
@@ -466,6 +472,11 @@ void _curr_block_solidify()
     return;
 }
 
+/* }}} */
+
+/* {{{ [Main loops for game] */
+
+// Calculate score, clear full row
 void _check_score()
 {
     static char tmp[PLAYGROUND_HEIGHT][PLAYGROUND_WIDTH];
@@ -493,14 +504,15 @@ void _check_score()
         }
     }
 
+    // 1 -> 3 / 2 -> 8 / 3 -> 20 / 4 -> 50
     memcpy(scene.playground, tmp, sizeof(tmp));
     switch (e)
     {
         case 4:
-            scene.score += 10;
+            scene.score += 50;
             break;
         case 3:
-            scene.score += 12;
+            scene.score += 20;
             break;
         case 2:
             scene.score += 8;
@@ -508,7 +520,7 @@ void _check_score()
         case 0:
             break;
         default:
-            scene.score += 5;
+            scene.score += 3;
             break;
     }
 
@@ -553,6 +565,7 @@ void _on_timer()
     {
         if (curr_block != NULL)
         {
+            // Move down automatically
             if (_curr_block_down())
             {
                 curr_block->pos.y --;
@@ -560,6 +573,8 @@ void _on_timer()
             else
             {
                 _curr_block_solidify();
+
+                // Failure?
                 if (PLAYGROUND_HEIGHT - 4 <= curr_block->pos.y)
                 {
                     _render_playground();
@@ -625,12 +640,14 @@ void tetris_loop()
 
     while (ch = getch())
     {
+        // KEY_ESC
         if ('\033' == ch)
         {
             timer_delete(timer);
             break;
         }
 
+        // Break out loop
         if (STATUS_OVER == scene.status || STATUS_EGG == scene.status)
         {
             break;
@@ -715,6 +732,11 @@ void tetris_loop()
     return;
 }
 
+/* }}} */
+
+/* {{{ [ncurses paintings] */
+
+// Draw splash
 void tetris_splash()
 {
     WINDOW *splash_box = newwin(
@@ -780,6 +802,7 @@ void tetris_splash()
     return;
 }
 
+// Draw main interface
 void tetris_interface()
 {
     // Playground
@@ -883,6 +906,11 @@ void tetris_interface()
     return;
 }
 
+/* }}} */
+
+/* {{{ [Endings] */
+
+// Draw gameover slicky face
 void tetris_gameover()
 {
     wbkgd(playground_box, COLOR_PAIR(23));
@@ -909,6 +937,7 @@ void tetris_gameover()
     return;
 }
 
+// 1024 image
 void tetris_egg()
 {
     wbkgd(playground_box, COLOR_PAIR(23));
@@ -939,6 +968,7 @@ void tetris_egg()
     return;
 }
 
+// See you poem
 void tetris_quit()
 {
     wbkgd(playground_box, COLOR_PAIR(7));
@@ -975,6 +1005,9 @@ void tetris_quit()
     return;
 }
 
+/* }}} */
+
+// Main frame
 void tetris_main()
 {
     bkgd(COLOR_PAIR(0));
@@ -986,8 +1019,12 @@ void tetris_main()
     return;
 }
 
+// Hint for inteliisence
 extern char *optarg;
 
+// I wrote this console game
+// I like console games
+// I ... Happy 1024
 int main(int argc, char *argv[])
 {
     memset(&scene, 0, sizeof(struct tetris_scene_t));
